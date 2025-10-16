@@ -1,0 +1,100 @@
+# ==========================================
+# TITANIC DATASET OPERATIONS IN PYTHON
+# ==========================================
+
+# Import required libraries
+import pandas as pd
+
+# ------------------------------------------
+# STEP 1: Read data from different formats
+# ------------------------------------------
+
+# Read data from CSV file
+# (If using locally, make sure titanic.csv is in the same directory)
+titanic_csv = pd.read_csv("https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv")
+print("✅ Titanic dataset loaded from CSV successfully!\n")
+
+# Display first 5 rows to verify
+print("---- FIRST 5 ROWS ----")
+print(titanic_csv.head(), "\n")
+
+# (Optional) Save it to Excel and read it back for demonstration
+titanic_csv.to_excel("titanic.xlsx", index=False)
+
+# Now, read from Excel format
+titanic_xls = pd.read_excel("titanic.xlsx")
+print("✅ Titanic dataset loaded from Excel successfully!\n")
+
+
+# ------------------------------------------
+# STEP 2: Indexing and Selecting Data
+# ------------------------------------------
+
+# Select a single column (Series)
+print("---- Selecting 'Name' column ----")
+print(titanic_csv['Name'].head(), "\n")
+
+# Select multiple columns
+print("---- Selecting 'Name' and 'Age' columns ----")
+print(titanic_csv[['Name', 'Age']].head(), "\n")
+
+# Select rows using index (iloc for position-based, loc for label-based)
+print("---- Selecting first 3 rows using iloc ----")
+print(titanic_csv.iloc[0:3], "\n")
+
+# Select specific rows and columns
+print("---- Selecting rows 0 to 4 and columns 'Name', 'Sex', 'Age' ----")
+print(titanic_csv.loc[0:4, ['Name', 'Sex', 'Age']], "\n")
+
+
+# ------------------------------------------
+# STEP 3: Sort Data
+# ------------------------------------------
+
+# Sort by 'Age' in ascending order
+sorted_age = titanic_csv.sort_values(by='Age')
+print("---- Data sorted by Age (Ascending) ----")
+print(sorted_age[['Name', 'Age']].head(), "\n")
+
+# Sort by 'Fare' in descending order
+sorted_fare = titanic_csv.sort_values(by='Fare', ascending=False)
+print("---- Data sorted by Fare (Descending) ----")
+print(sorted_fare[['Name', 'Fare']].head(), "\n")
+
+
+# ------------------------------------------
+# STEP 4: Describe attributes of data
+# ------------------------------------------
+
+print("---- Descriptive Statistics of Numerical Columns ----")
+print(titanic_csv.describe(), "\n")
+
+# Describe categorical columns
+print("---- Descriptive Statistics of Categorical Columns ----")
+print(titanic_csv.describe(include=['object']), "\n")
+
+
+# ------------------------------------------
+# STEP 5: Check data types of each column
+# ------------------------------------------
+
+print("---- Data Types of Each Column ----")
+print(titanic_csv.dtypes, "\n")
+
+
+# ------------------------------------------
+# STEP 6: Additional Insights (Optional)
+# ------------------------------------------
+
+# Show basic info (non-null counts + dtypes)
+print("---- Basic Info ----")
+print(titanic_csv.info(), "\n")
+
+# Check for missing values
+print("---- Missing Values in Each Column ----")
+print(titanic_csv.isnull().sum(), "\n")
+
+# ------------------------------------------
+# End of Program
+# ------------------------------------------
+print("✅ All operations completed successfully!")
