@@ -1,0 +1,65 @@
+4. Write a program to do: A dataset collected in a cosmetics shop showing
+details of customers and whether or not they responded to a special offer
+to buy a new lip-stick is shown in table below. (Implement step by step
+using commands - Dont use library) Use this dataset to build a decision
+tree, with Buys as the target variable, to help in buying lipsticks in the
+future. Find the root node of the decision tree.
+
+import pandas as pd
+import math
+data = {
+    'Age': ['Young', 'Young', 'Middle', 'Senior', 'Senior', 'Senior', 'Middle', 'Young', 'Young', 'Senior',
+             'Middle', 'Young', 'Senior', 'Middle', 'Middle'],
+    'Income': ['High', 'High', 'High', 'Medium', 'Low', 'Low', 'Low', 'Medium', 'Low', 'Medium',
+               'High', 'Medium', 'Medium', 'Low', 'Medium'],
+    'Gender': ['F', 'F', 'M', 'F', 'F', 'M', 'M', 'M', 'F', 'M',
+               'F', 'M', 'F', 'M', 'F'],
+    'Buys': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'No', 'Yes', 'Yes',
+             'Yes', 'No', 'Yes', 'Yes', 'Yes']
+}
+
+df = pd.DataFrame(data)
+print(df.head())
+
+#Entropy Function
+def entropy(column):
+  values = column.value_counts(normalize=True)
+  ent = -sum(p * math.log2(p) for p in values)
+  return ent
+
+#Base entropy for target variable
+base_entropy = entropy(df['Buys'])
+print("Base Entropy of Buys col = ", base_entropy)
+
+#Information Gain
+def information_gain(df,attribute,target='Buys'):
+  total_entropy = entropy(df[target])
+  values = df[attribute].unique()
+  weighted_entropy=0.0
+
+  print("Calculating for - ", attribute)
+  for v in values:
+    subset = df[ df[attribute]==v ]
+    weight = len(subset) / len(df)
+    subset_entropy =entropy(subset[target])
+    weighted_entropy = weighted_entropy + subset_entropy
+    print(f"  {attribute} = {v:7s} → subset size = {len(subset):2d}, "
+              f"entropy = {subset_entropy:.4f}, weight = {weight:.3f}, "
+              f"weighted part = {weight * subset_entropy:.4f}")
+    
+  info_gain = total_entropy - weighted_entropy
+  print("Information Gain = ", info_gain)
+  return info_gain
+
+# for each attribute we check  Info Gain
+features = {"Age", "Income", "Gender"}
+gains={}
+
+for f in features:
+  gains[f] =  information_gain(df,f)
+
+#Now for root node- 
+for feat,g in gains.items():
+  print(f"{feat:10s} : {g:.4f}")
+root = max(gains, key=gains.get)
+print(f"\n=> Root Node: '{root}' (Highest Information Gain = {gains[root]:.4f})")
