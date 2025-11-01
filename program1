@@ -1,46 +1,46 @@
-# Program 1: Data Operations using inbuilt Titanic dataset
+import pandas as pd 
+
+# IF excel / csv given then read 
+# Read data from CSV
+#data_csv = pd.read_csv("titanic.csv")
+#print("\n--- Data from CSV ---")
+#print(data_csv.head())
+
+# Read data from Excel (if available)
+# data_xls = pd.read_excel("titanic.xlsx")
+# print("\n--- Data from Excel ---")
+# print(data_xls.head())
 
 import seaborn as sns
-import pandas as pd
-
-# Load Titanic dataset from Seaborn
-data = sns.load_dataset('titanic')
-
-# Save to CSV and Excel (to show reading from different formats)
+data = sns.load_dataset("titanic")
 data.to_csv('titanic.csv', index=False)
-data.to_excel('titanic.xlsx', index=False)
-
-# Read data from CSV
 data_csv = pd.read_csv('titanic.csv')
-print("\n--- Data from CSV ---")
 print(data_csv.head())
+print("_______________________________________________________")
 
-# Read data from Excel
-data_xls = pd.read_excel('titanic.xlsx')
-print("\n--- Data from Excel ---")
-print(data_xls.head())
+# Indexing and Selecting Cols
+print("Selecting Survived Age Sex cols")
+print(data_csv[['survived','age','sex']])
+print("_______________________________________________________")
 
-# Indexing and selecting columns
-print("\n--- Selecting 'survived', 'age', 'sex' columns ---")
-print(data_csv[['survived', 'age', 'sex']].head())
-
-# Selecting rows using loc and iloc
-print("\n--- Selecting 1st 5 rows using iloc ---")
+print("selecting first 5 rows using iloc")
 print(data_csv.iloc[0:5])
+print("_______________________________________________________")
 
-print("\n--- Selecting passengers older than 60 using loc ---")
-print(data_csv.loc[data_csv['age'] > 60, ['survived', 'age', 'sex']])
+print("selecting passengers older than 60 using loc")
+print(data_csv.loc[ data_csv['age'] >60  , ['survived','age']])
+print("_______________________________________________________")
 
-# Sorting data
-print("\n--- Sorting by Age ---")
-sorted_data = data_csv.sort_values(by='age', ascending=True)
-print(sorted_data[['survived', 'age', 'sex']].head())
+#Sorting Data-
 
-# Describe attributes
-print("\n--- Descriptive Statistics ---")
+print("Sorting by AGE")
+sorted = data_csv.sort_values(by='age', ascending=True)
+print(sorted[['age','survived']])
+
+print("_______________________________________________________")
+
+#Describe Attributes-
 print(data_csv.describe())
+print("_______________________________________________________")
 
-# Check data types of each column
-print("\n--- Data Types of Each Column ---")
 print(data_csv.dtypes)
-
