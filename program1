@@ -1,100 +1,46 @@
-# ==========================================
-# TITANIC DATASET OPERATIONS IN PYTHON
-# ==========================================
+# Program 1: Data Operations using inbuilt Titanic dataset
 
-# Import required libraries
+import seaborn as sns
 import pandas as pd
 
-# ------------------------------------------
-# STEP 1: Read data from different formats
-# ------------------------------------------
+# Load Titanic dataset from Seaborn
+data = sns.load_dataset('titanic')
 
-# Read data from CSV file
-# (If using locally, make sure titanic.csv is in the same directory)
-titanic_csv = pd.read_csv("https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv")
-print("✅ Titanic dataset loaded from CSV successfully!\n")
+# Save to CSV and Excel (to show reading from different formats)
+data.to_csv('titanic.csv', index=False)
+data.to_excel('titanic.xlsx', index=False)
 
-# Display first 5 rows to verify
-print("---- FIRST 5 ROWS ----")
-print(titanic_csv.head(), "\n")
+# Read data from CSV
+data_csv = pd.read_csv('titanic.csv')
+print("\n--- Data from CSV ---")
+print(data_csv.head())
 
-# (Optional) Save it to Excel and read it back for demonstration
-titanic_csv.to_excel("titanic.xlsx", index=False)
+# Read data from Excel
+data_xls = pd.read_excel('titanic.xlsx')
+print("\n--- Data from Excel ---")
+print(data_xls.head())
 
-# Now, read from Excel format
-titanic_xls = pd.read_excel("titanic.xlsx")
-print("✅ Titanic dataset loaded from Excel successfully!\n")
+# Indexing and selecting columns
+print("\n--- Selecting 'survived', 'age', 'sex' columns ---")
+print(data_csv[['survived', 'age', 'sex']].head())
 
+# Selecting rows using loc and iloc
+print("\n--- Selecting 1st 5 rows using iloc ---")
+print(data_csv.iloc[0:5])
 
-# ------------------------------------------
-# STEP 2: Indexing and Selecting Data
-# ------------------------------------------
+print("\n--- Selecting passengers older than 60 using loc ---")
+print(data_csv.loc[data_csv['age'] > 60, ['survived', 'age', 'sex']])
 
-# Select a single column (Series)
-print("---- Selecting 'Name' column ----")
-print(titanic_csv['Name'].head(), "\n")
+# Sorting data
+print("\n--- Sorting by Age ---")
+sorted_data = data_csv.sort_values(by='age', ascending=True)
+print(sorted_data[['survived', 'age', 'sex']].head())
 
-# Select multiple columns
-print("---- Selecting 'Name' and 'Age' columns ----")
-print(titanic_csv[['Name', 'Age']].head(), "\n")
+# Describe attributes
+print("\n--- Descriptive Statistics ---")
+print(data_csv.describe())
 
-# Select rows using index (iloc for position-based, loc for label-based)
-print("---- Selecting first 3 rows using iloc ----")
-print(titanic_csv.iloc[0:3], "\n")
+# Check data types of each column
+print("\n--- Data Types of Each Column ---")
+print(data_csv.dtypes)
 
-# Select specific rows and columns
-print("---- Selecting rows 0 to 4 and columns 'Name', 'Sex', 'Age' ----")
-print(titanic_csv.loc[0:4, ['Name', 'Sex', 'Age']], "\n")
-
-
-# ------------------------------------------
-# STEP 3: Sort Data
-# ------------------------------------------
-
-# Sort by 'Age' in ascending order
-sorted_age = titanic_csv.sort_values(by='Age')
-print("---- Data sorted by Age (Ascending) ----")
-print(sorted_age[['Name', 'Age']].head(), "\n")
-
-# Sort by 'Fare' in descending order
-sorted_fare = titanic_csv.sort_values(by='Fare', ascending=False)
-print("---- Data sorted by Fare (Descending) ----")
-print(sorted_fare[['Name', 'Fare']].head(), "\n")
-
-
-# ------------------------------------------
-# STEP 4: Describe attributes of data
-# ------------------------------------------
-
-print("---- Descriptive Statistics of Numerical Columns ----")
-print(titanic_csv.describe(), "\n")
-
-# Describe categorical columns
-print("---- Descriptive Statistics of Categorical Columns ----")
-print(titanic_csv.describe(include=['object']), "\n")
-
-
-# ------------------------------------------
-# STEP 5: Check data types of each column
-# ------------------------------------------
-
-print("---- Data Types of Each Column ----")
-print(titanic_csv.dtypes, "\n")
-
-
-# ------------------------------------------
-# STEP 6: Additional Insights (Optional)
-# ------------------------------------------
-
-# Show basic info (non-null counts + dtypes)
-print("---- Basic Info ----")
-print(titanic_csv.info(), "\n")
-
-# Check for missing values
-print("---- Missing Values in Each Column ----")
-print(titanic_csv.isnull().sum(), "\n")
-
-# ------------------------------------------
-# End of Program
-# ------------------------------------------
-print("✅ All operations completed successfully!")
