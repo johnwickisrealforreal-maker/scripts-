@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+3. Perform the following operations using Python on the data set
+House_Price Prediction dataset. Compute standard deviation, variance and
+percentiles using separate commands, for each feature. Create a histogram
+for each feature in the dataset to illustrate the feature distributions.
+
+
+import matplotlib as plt
+
+# Create a small sample dataset
+data = {
+    'Area_sqft': [1200, 1500, 1800, 2400, 3000, 3500],
+    'Bedrooms': [2, 3, 3, 4, 4, 5],
+    'Bathrooms': [1, 2, 2, 3, 3, 4],
+    'Price_lakhs': [45, 60, 72, 90, 120, 150]
+}
+
+df = pd.DataFrame(data)
+print("Standard Deviation = ", df.std(numeric_only=True))
+print("_______________________________________________________")
+
+print("Variance = ", df.var(numeric_only=True))
+print("_______________________________________________________")
+
+print("Averages = ", df.mean(numeric_only=True))
+print("_______________________________________________________")
+
+print("Percentiles =", df.describe( percentiles=[0.25,0.5,0.75]).T[['25%','50%','75%']])
+print("_______________________________________________________")
+
+
+print("Making Histogram for the numerical featues ")
+df.hist(figsize=(8,6) , bins=5 , color='skyblue' , edgecolor='black')
+plt.tight_layout()
+plt.show()
