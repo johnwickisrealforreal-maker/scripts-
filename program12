@@ -1,0 +1,41 @@
+12.Use Iris flower dataset and perform following :
+1. Create a box plot for each feature in the dataset.
+2. Identify and discuss distributions and identify outliers from them.
+
+
+# program12_iris_boxplot.py
+# Iris dataset: boxplots + distribution/outlier discussion
+
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
+
+iris = load_iris()
+data = iris.data
+feature_names = iris.feature_names
+
+# 1) Create a box plot for each feature
+for i in range(data.shape[1]):
+    plt.figure()
+    plt.boxplot(data[:, i])
+    plt.title(f"Box Plot of {feature_names[i]}")
+    plt.ylabel(feature_names[i])
+    plt.tight_layout()
+    plt.show()
+
+# 2) Printing distribution & outlier analysis (based on visual inspection)
+print("---- Distribution & Outlier Notes ----\n")
+print("1) Sepal length (cm):")
+print("   - Distribution: fairly symmetric.")
+print("   - Outliers: boxplot generally shows none or very few.\n")
+
+print("2) Sepal width (cm):")
+print("   - Distribution: slightly skewed.")
+print("   - Outliers: usually a few visible (high-end or low-end).\n")
+
+print("3) Petal length (cm):")
+print("   - Distribution: strongly separated groups (because of 3 species).")
+print("   - Outliers: typically none, values form distinct clusters.\n")
+
+print("4) Petal width (cm):")
+print("   - Distribution: also shows clear class separation.")
+print("   - Outliers: normally none, values lie in three clean bands.\n")
