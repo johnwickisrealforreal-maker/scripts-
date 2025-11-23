@@ -1,0 +1,95 @@
+18. Use House_Price prediction dataset. Provide summary statistics (mean,
+median, minimum, maximum, standard deviation) of variables (categorical
+vs quantitative) such as- For example, if categorical variable is age groups
+and quantitative variable is income, then provide summary statistics of
+income grouped by the age groups.
+
+
+import pandas as pd
+import numpy as np
+
+# ============================================
+# OPTION 1 — Load real dataset (Uncomment)
+# ============================================
+# df = pd.read_csv("House_Price.csv")
+
+
+# ============================================
+# OPTION 2 — Mock dataset (Use this for exam)
+# ============================================
+data = {
+    "age_group": ["20-30", "20-30", "30-40", "30-40", "40-50", "40-50", "40-50"],
+    "income": [30000, 35000, 45000, 47000, 55000, 60000, 58000],
+    "house_price": [50, 55, 70, 72, 80, 85, 83]
+}
+
+df = pd.DataFrame(data)
+
+print("\n===== Dataset Preview =====")
+print(df)
+
+
+# ======================================================
+# 1️⃣ BASIC DESCRIBE (mean, std, min, max, IQR etc.)
+# ======================================================
+print("\n===== describe() Grouped by Age Group =====")
+print(df.groupby("age_group").describe())
+
+
+# ======================================================
+# 2️⃣ MANUAL STATISTICS — mean, median, mode
+# ======================================================
+print("\n===== Mean, Median, Mode =====")
+print(df.groupby("age_group").agg({
+    "income": ["mean", "median", lambda x: x.mode()[0]],
+    "house_price": ["mean", "median", lambda x: x.mode()[0]]
+}).rename(columns={"<lambda_0>": "mode"}))
+
+
+# ======================================================
+# 3️⃣ MIN, MAX, RANGE
+# ======================================================
+print("\n===== Min, Max, Range =====")
+print(df.groupby("age_group").agg({
+    "income": ["min", "max", lambda x: x.max() - x.min()],
+    "house_price": ["min", "max", lambda x: x.max() - x.min()]
+}).rename(columns={"<lambda_0>": "range"}))
+
+
+# ======================================================
+# 4️⃣ STANDARD DEVIATION, VARIANCE
+# ======================================================
+print("\n===== Standard Deviation & Variance =====")
+print(df.groupby("age_group").agg({
+    "income": ["std", "var"],
+    "house_price": ["std", "var"]
+}))
+
+
+# ======================================================
+# 5️⃣ QUANTILES AND IQR
+# ======================================================
+print("\n===== Quantiles & IQR =====")
+quantile_stats = df.groupby("age_group").agg({
+    "income": [lambda x: x.quantile(0.25),
+               lambda x: x.quantile(0.50),
+               lambda x: x.quantile(0.75),
+               lambda x: x.quantile(0.75) - x.quantile(0.25)],
+    "house_price": [lambda x: x.quantile(0.25),
+                    lambda x: x.quantile(0.50),
+                    lambda x: x.quantile(0.75),
+                    lambda x: x.quantile(0.75) - x.quantile(0.25)]
+})
+
+quantile_stats.columns = ['Q1','Q2','Q3','IQR','Q1_2','Q2_2','Q3_2','IQR_2']
+print(quantile_stats)
+
+
+# ======================================================
+# 7️⃣ COUNT, UNIQUE COUNT, SUM
+# ======================================================
+print("\n===== Count, Unique Count, Sum =====")
+print(df.groupby("age_group").agg({
+    "income": ["count", "nunique", "sum"],
+    "house_price": ["count", "nunique", "sum"]
+}))
