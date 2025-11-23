@@ -1,0 +1,52 @@
+14. Use the covid_vaccine_statewise.csv dataset and perform the following
+analytics.
+A. Describe the dataset.
+B. Number of Males vaccinated
+C.. Number of females vaccinated
+
+
+# program14_covid_vaccine_genderwise.py
+# COVID vaccine analytics: describe + male/female vaccination counts
+
+import pandas as pd
+
+# Load dataset (CSV must be in same folder)
+df = pd.read_csv("covid_vaccine_statewise.csv")
+
+# A) Describe the dataset
+print("---- (A) Dataset Description ----\n")
+
+print("Columns:")
+print(df.columns.tolist(), "\n")
+
+print("Statistical Summary (numeric columns):")
+print(df.describe(), "\n")
+
+print("Dataset Info:")
+print(df.info(), "\n")
+
+# Detect Male and Female columns (different datasets have slightly different names)
+male_col = None
+female_col = None
+
+for col in df.columns:
+    cname = col.lower()
+    if "male" in cname:
+        male_col = col
+    if "female" in cname:
+        female_col = col
+
+if male_col is None:
+    raise ValueError("Male vaccination column not found. Check CSV.")
+if female_col is None:
+    raise ValueError("Female vaccination column not found. Check CSV.")
+
+# B) Number of males vaccinated (cumulative)
+print("---- (B) Total Number of Males Vaccinated ----\n")
+total_males = df[male_col].sum()
+print("Total Males Vaccinated:", total_males, "\n")
+
+# C) Number of females vaccinated (cumulative)
+print("---- (C) Total Number of Females Vaccinated ----\n")
+total_females = df[female_col].sum()
+print("Total Females Vaccinated:", total_females, "\n")
