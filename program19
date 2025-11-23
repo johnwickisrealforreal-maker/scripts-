@@ -1,0 +1,66 @@
+19. Write a Python program to display some basic statistical details like
+percentile, mean, standard deviation etc (Use python and pandas
+commands) the species of ‘Iris-setosa’, ‘Iris-versicolor’ and ‘Iris-versicolor’
+of iris.csv dataset.
+
+import pandas as pd
+
+# ============================================
+# OPTION 1 — Load actual iris.csv (Uncomment)
+# ============================================
+# df = pd.read_csv("iris.csv")
+
+
+# ============================================
+# OPTION 2 — Mock dataset (for exam demo)
+# ============================================
+data = {
+    "sepal_length": [5.1, 4.9, 6.0, 6.5, 7.1, 5.9],
+    "sepal_width":  [3.5, 3.0, 2.9, 3.0, 3.1, 3.2],
+    "petal_length": [1.4, 1.4, 4.5, 5.1, 5.9, 4.2],
+    "petal_width":  [0.2, 0.2, 1.5, 2.0, 2.3, 1.3],
+    "species": [
+        "Iris-setosa", "Iris-setosa",
+        "Iris-versicolor", "Iris-versicolor",
+        "Iris-virginica", "Iris-virginica"
+    ]
+}
+
+df = pd.DataFrame(data)
+
+
+# ============================================
+# Function to show statistics for each species
+# ============================================
+def print_stats(species_name):
+    print(f"\n==================== {species_name} ====================")
+    subset = df[df["species"] == species_name]
+
+    print("\n--- describe() ---")
+    print(subset.describe())
+
+    print("\n--- Mean ---")
+    print(subset.mean(numeric_only=True))
+
+    print("\n--- Standard Deviation ---")
+    print(subset.std(numeric_only=True))
+
+    print("\n--- Percentiles (25%, 50%, 75%) ---")
+    print(subset.quantile([0.25, 0.50, 0.75]))
+
+    print("\n--- Variance ---")
+    print(subset.var(numeric_only=True))
+
+    print("\n--- Min Values ---")
+    print(subset.min(numeric_only=True))
+
+    print("\n--- Max Values ---")
+    print(subset.max(numeric_only=True))
+
+
+# ============================================
+# Print stats for all 3 species
+# ============================================
+print_stats("Iris-setosa")
+print_stats("Iris-versicolor")
+print_stats("Iris-virginica")
