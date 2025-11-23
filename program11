@@ -1,0 +1,42 @@
+11. Use Iris flower dataset and perform following :
+1. List down the features and their types (e.g., numeric, nominal)
+available in the dataset. 2. Create a histogram for each feature in the
+dataset to illustrate the feature distributions.
+
+
+# program11_iris_features_hist.py
+# Iris dataset: feature listing + histograms
+
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
+
+iris = load_iris()
+
+# 1) List down the features and their types
+print("---- Iris Dataset Feature Information ----\n")
+
+print("Features:")
+for fname in iris.feature_names:
+    print(f"  - {fname} : numeric")
+
+print("\nTarget Attribute:")
+print("  - species : nominal")
+
+print("\nSpecies Classes:")
+for cls in iris.target_names:
+    print("  -", cls)
+
+# 2) Histograms of each feature
+data = iris.data
+feature_names = iris.feature_names
+
+print("\nHistograms will open in separate windows...")
+
+for i in range(data.shape[1]):
+    plt.figure()
+    plt.hist(data[:, i], bins=10)
+    plt.title(f"Histogram of {feature_names[i]}")
+    plt.xlabel(feature_names[i])
+    plt.ylabel("Frequency")
+    plt.tight_layout()
+    plt.show()
