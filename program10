@@ -1,0 +1,86 @@
+10. Write a program to do the following: You have given a collection of 8
+points. P1=[2, 10] P2=[2, 5] P3=[8, 4] P4=[5, 8] P5=[7,5] P6=[6, 4] P7=[1, 2]
+P8=[4, 9]. Perform the k-mean clustering with initial centroids as m1=P1
+=Cluster#1=C1 and m2=P4=cluster#2=C2, m3=P7 =Cluster#3=C3. Answer
+the following 1] Which cluster does P6 belong to? 2] What is the
+population of a cluster around m3? 3] What is the updated value of m1,
+m2, m3? 
+
+
+# program10_kmeans_manual.py
+# Manual 1-step k-means (pure Python)
+
+import math
+
+# Points
+points = {
+    'P1': (2, 10),
+    'P2': (2, 5),
+    'P3': (8, 4),
+    'P4': (5, 8),
+    'P5': (7, 5),
+    'P6': (6, 4),
+    'P7': (1, 2),
+    'P8': (4, 9)
+}
+
+# Initial centroids
+m1 = points['P1']   # C1
+m2 = points['P4']   # C2
+m3 = points['P7']   # C3
+
+def euclidean(a, b):
+    return math.hypot(a[0] - b[0], a[1] - b[1])
+
+# Step 1: compute distances and assign clusters
+assignments = {}   # name -> (cluster, d1, d2, d3)
+for name, p in points.items():
+    d1 = euclidean(p, m1)
+    d2 = euclidean(p, m2)
+    d3 = euclidean(p, m3)
+    dmin = min(d1, d2, d3)
+    if dmin == d1:
+        cluster = 'C1'
+    elif dmin == d2:
+        cluster = 'C2'
+    else:
+        cluster = 'C3'
+    assignments[name] = (cluster, d1, d2, d3)
+
+# Print table
+print("Point |   x    y  |  d->m1    d->m2    d->m3   | Assigned")
+print("-------------------------------------------------------------")
+for name in sorted(points.keys()):
+    p = points[name]
+    cl, d1, d2, d3 = assignments[name]
+    print(f"{name:3s}   | {p[0]:5.2f} {p[1]:5.2f} | {d1:8.4f} {d2:8.4f} {d3:8.4f} | {cl}")
+
+# Q1
+p6_cluster = assignments['P6'][0]
+print(f"\nAnswer 1) P6 belongs to: {p6_cluster}")
+
+# Q2: population of cluster around m3 (C3)
+cluster_counts = {'C1': 0, 'C2': 0, 'C3': 0}
+for v in assignments.values():
+    cluster_counts[v[0]] += 1
+print(f"Answer 2) Population of cluster around m3 (C3): {cluster_counts['C3']}")
+
+# Step 2: recompute centroids
+def recompute_centroid(assignments, cname):
+    xs, ys = [], []
+    for name, (cl, _, _, _) in assignments.items():
+        if cl == cname:
+            x, y = points[name]
+            xs.append(x); ys.append(y)
+    if not xs:
+        return None
+    return (sum(xs)/len(xs), sum(ys)/len(ys))
+
+m1_new = recompute_centroid(assignments, 'C1')
+m2_new = recompute_centroid(assignments, 'C2')
+m3_new = recompute_centroid(assignments, 'C3')
+
+print("\nAnswer 3) Updated centroids:")
+print(f"  m1 (new) = ({m1_new[0]:.4f}, {m1_new[1]:.4f})")
+print(f"  m2 (new) = ({m2_new[0]:.4f}, {m2_new[1]:.4f})")
+print(f"  m3 (new) = ({m3_new[0]:.4f}, {m3_new[1]:.4f})")
