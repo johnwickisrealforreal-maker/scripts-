@@ -1,0 +1,57 @@
+13. Use the covid_vaccine_statewise.csv dataset and perform the following
+analytics.
+a. Describe the dataset
+b. Number of persons state wise vaccinated for first dose in India
+c. Number of persons state wise vaccinated for second dose in India
+
+# program13_covid_vaccine_analysis.py
+# COVID vaccine analytics: describe + state-wise dose counts
+
+import pandas as pd
+
+# Load dataset (CSV must be in same folder)
+df = pd.read_csv("covid_vaccine_statewise.csv")
+
+# a) Describe the dataset
+print("---- (a) Dataset Description ----\n")
+print("Columns:")
+print(df.columns.tolist(), "\n")
+
+print("Statistical Summary (numeric columns):")
+print(df.describe(), "\n")
+
+print("Dataset Info:")
+print(df.info(), "\n")
+
+# b) Number of persons state-wise vaccinated for first dose
+print("---- (b) State-wise First Dose Vaccinations ----\n")
+
+# Common column names in the dataset:
+# 'State', 'First Dose Administered' or 'First Dose Administered.1'
+# We detect the correct column automatically.
+first_dose_col = None
+for col in df.columns:
+    if "First" in col and "Dose" in col:
+        first_dose_col = col
+        break
+
+if first_dose_col is None:
+    raise ValueError("First Dose column not found. Please check CSV column names.")
+
+first_dose = df.groupby("State")[first_dose_col].max().sort_values(ascending=False)
+print(first_dose, "\n")
+
+# c) Number of persons state-wise vaccinated for second dose
+print("---- (c) State-wise Second Dose Vaccinations ----\n")
+
+second_dose_col = None
+for col in df.columns:
+    if "Second" in col and "Dose" in col:
+        second_dose_col = col
+        break
+
+if second_dose_col is None:
+    raise ValueError("Second Dose column not found. Please check CSV column names.")
+
+second_dose = df.groupby("State")[second_dose_col].max().sort_values(ascending=False)
+print(second_dose, "\n")
