@@ -1,0 +1,73 @@
+24. Perform the following operations using Python on a suitable data set,
+counting unique values of data, format of each column, converting variable
+data type (e.g. from long to short, vice versa), identifying missing values
+and filling in the missing values.
+
+import pandas as pd
+import numpy as np
+
+# ----------------------------------------------------
+# 1. Load dataset
+# ----------------------------------------------------
+# Uncomment this when you have an actual dataset CSV:
+# df = pd.read_csv("your_dataset.csv")
+
+# Mock sample data for demonstration:
+data = {
+    "Age": [25, 30, 30, np.nan, 40, 40],
+    "Income": [50000, 60000, np.nan, 45000, 70000, 70000],
+    "Gender": ["M", "F", "F", "M", None, "M"],
+    "Rating": ["4.5", "3.0", "4.0", "5.0", "2.5", None]
+}
+df = pd.DataFrame(data)
+
+print("Original Dataset:")
+print(df, "\n")
+
+# ----------------------------------------------------
+# 2. Count unique values in each column
+# ----------------------------------------------------
+print("Unique Value Count:")
+print(df.nunique(), "\n")
+
+# ----------------------------------------------------
+# 3. Check data type/format of each column
+# ----------------------------------------------------
+print("Column Data Types:")
+print(df.dtypes, "\n")
+
+# ----------------------------------------------------
+# 4. Convert data types
+# ----------------------------------------------------
+# Example: convert 'Rating' from object → float
+df["Rating"] = pd.to_numeric(df["Rating"], errors="coerce")
+
+# Convert Income from float → integer (downcasting allowed)
+df["Income"] = pd.to_numeric(df["Income"], downcast="integer")
+
+# Convert Age to integer after filling missing
+df["Age"] = df["Age"].fillna(df["Age"].mean())  # temporarily fill
+df["Age"] = df["Age"].astype(int)
+
+print("Data Types After Conversion:")
+print(df.dtypes, "\n")
+
+# ----------------------------------------------------
+# 5. Identify missing values
+# ----------------------------------------------------
+print("Missing Values in Dataset:")
+print(df.isnull().sum(), "\n")
+
+# ----------------------------------------------------
+# 6. Fill missing values
+# ----------------------------------------------------
+
+# Numeric columns → fill with mean
+df["Income"] = df["Income"].fillna(df["Income"].mean())
+df["Rating"] = df["Rating"].fillna(df["Rating"].mean())
+
+# Categorical columns → fill with mode
+df["Gender"] = df["Gender"].fillna(df["Gender"].mode()[0])
+
+print("Dataset After Filling Missing Values:")
+print(df)
