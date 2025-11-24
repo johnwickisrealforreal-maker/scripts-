@@ -1,0 +1,83 @@
+25. Perform Data Cleaning, Data transformation using Python on any data
+set.
+
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+
+# -------------------------------------------------------------
+# 1. Load Dataset
+# -------------------------------------------------------------
+# Uncomment this line when you have your own CSV:
+# df = pd.read_csv("your_dataset.csv")
+
+# Mock dataset for demonstration:
+data = {
+    "Name": ["Alice", "Bob", "Charlie", "Bob", None],
+    "Age": [25, 30, np.nan, 30, 40],
+    "Income": ["50000", "60000", "65000", None, "70000"],
+    "City": ["Pune", "Mumbai", "Pune", "mumbai", None],
+    "Gender": ["F", "M", "M", "M", None]
+}
+df = pd.DataFrame(data)
+
+print("Original Dataset:")
+print(df, "\n")
+
+# -------------------------------------------------------------
+# 2. Basic Inspection
+# -------------------------------------------------------------
+print("Data Types:")
+print(df.dtypes, "\n")
+
+print("Missing Values:")
+print(df.isnull().sum(), "\n")
+
+# -------------------------------------------------------------
+# 3. Data Cleaning
+# -------------------------------------------------------------
+
+# 3.1 Remove duplicate rows
+df = df.drop_duplicates()
+
+# 3.2 Fix inconsistent text formatting
+df["City"] = df["City"].str.title()  # 'mumbai' → 'Mumbai'
+
+# 3.3 Convert Income to numeric
+df["Income"] = pd.to_numeric(df["Income"], errors="coerce")
+
+# 3.4 Handling Missing Values
+df["Name"] = df["Name"].fillna("Unknown")                   # categorical → mode/string
+df["Gender"] = df["Gender"].fillna(df["Gender"].mode()[0])  # categorical → mode
+df["City"] = df["City"].fillna("Unknown")                   # categorical
+df["Age"] = df["Age"].fillna(df["Age"].mean())              # numeric → mean
+df["Income"] = df["Income"].fillna(df["Income"].mean())     # numeric → mean
+
+print("After Cleaning:")
+print(df, "\n")
+
+# -------------------------------------------------------------
+# 4. Data Transformation
+# -------------------------------------------------------------
+
+# 4.1 Rename columns for uniformity
+df = df.rename(columns={"Name": "CustomerName", "City": "CityName"})
+
+# 4.2 Label Encoding for categorical fields
+encoder = LabelEncoder()
+df["Gender"] = encoder.fit_transform(df["Gender"])
+df["CityName"] = encoder.fit_transform(df["CityName"])
+
+# 4.3 Feature Scaling for numeric columns
+scaler = MinMaxScaler()
+df[["Age", "Income"]] = scaler.fit_transform(df[["Age", "Income"]])
+
+print("After Transformation:")
+print(df, "\n")
+
+# -------------------------------------------------------------
+# 5. Final Cleaned & Transformed Dataset
+# -------------------------------------------------------------
+print("Final Processed Data:")
+print(df)
