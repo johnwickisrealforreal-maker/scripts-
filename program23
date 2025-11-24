@@ -1,0 +1,65 @@
+23. With reference to Table , obtain the Frequency table for the attribute age. From the frequency table you have obtained,
+calculate the information gain of the frequency table while splitting on Age. (Use step by step Python/Pandas commands) 
+do this one well its likely to be asked
+
+
+import pandas as pd
+import numpy as np
+from math import log2
+
+# ----------------------------------------
+# Load the dataset
+# ----------------------------------------
+# Uncomment when you have the CSV:
+# df = pd.read_csv("yourfile.csv")
+
+# Using mock data reconstructed from the image:
+data = {
+    "Age": ["Young","Young","Middle","Old","Old","Old","Middle","Young",
+            "Young","Old","Young","Middle","Middle","Old"],
+    "Class": ["No","No","Yes","Yes","Yes","No","Yes","No",
+              "Yes","Yes","Yes","Yes","Yes","No"]
+}
+
+df = pd.DataFrame(data)
+
+# Normalize (Young/young)
+df["Age"] = df["Age"].str.capitalize()
+
+# ----------------------------------------
+# Frequency table for Age
+# ----------------------------------------
+freq_table = df["Age"].value_counts()
+print("Frequency Table for Age:\n", freq_table, "\n")
+
+# ----------------------------------------
+# Entropy function
+# ----------------------------------------
+def entropy(series):
+    values = series.value_counts()
+    total = len(series)
+    result = 0
+    for count in values:
+        p = count / total
+        result += -p * log2(p)
+    return result
+
+# ----------------------------------------
+# Entropy of entire dataset
+# ----------------------------------------
+entropy_total = entropy(df["Class"])
+print("Entropy of Dataset =", entropy_total)
+
+# ----------------------------------------
+# Weighted Entropy after splitting on Age
+# ----------------------------------------
+weighted_entropy = 0
+for age, subset in df.groupby("Age"):
+    e = entropy(subset["Class"])
+    weighted_entropy += (len(subset) / len(df)) * e
+    print(f"Entropy(Age = {age}) =", e)
+
+# Information Gain
+IG = entropy_total - weighted_entropy
+print("\nInformation Gain for Age =", IG)
+
