@@ -3,39 +3,54 @@
 2. Identify and discuss distributions and identify outliers from them.
 
 
-# program12_iris_boxplot.py
-# Iris dataset: boxplots + distribution/outlier discussion
+# program12_iris_boxplot_csv.py
+# Iris dataset: boxplots + distribution and outlier analysis (using CSV file)
 
-from sklearn.datasets import load_iris
+import pandas as pd
 import matplotlib.pyplot as plt
 
-iris = load_iris()
-data = iris.data
-feature_names = iris.feature_names
+# 1) Load dataset from CSV
+df = pd.read_csv("iris.csv")   # <-- use your file name
 
-# 1) Create a box plot for each feature
-for i in range(data.shape[1]):
+# Identify numeric features
+numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+
+# 1) Create boxplot for each numeric feature
+for col in numeric_cols:
     plt.figure()
-    plt.boxplot(data[:, i])
-    plt.title(f"Box Plot of {feature_names[i]}")
-    plt.ylabel(feature_names[i])
+    plt.boxplot(df[col])
+    plt.title(f"Box Plot of {col}")
+    plt.ylabel(col)
     plt.tight_layout()
     plt.show()
 
-# 2) Printing distribution & outlier analysis (based on visual inspection)
-print("---- Distribution & Outlier Notes ----\n")
-print("1) Sepal length (cm):")
-print("   - Distribution: fairly symmetric.")
-print("   - Outliers: boxplot generally shows none or very few.\n")
+# 2) Distribution & outlier analysis
+print("\n---- Distribution & Outlier Analysis ----\n")
 
-print("2) Sepal width (cm):")
-print("   - Distribution: slightly skewed.")
-print("   - Outliers: usually a few visible (high-end or low-end).\n")
+for col in numeric_cols:
+    print(f"{col}:")
+    q1 = df[col].quantile(0.25)
+    q3 = df[col].quantile(0.75)
+    iqr = q3 - q1
+    lower = q1 - 1.5 * iqr
+    upper = q3 - 1.5 * iqr
 
-print("3) Petal length (cm):")
-print("   - Distribution: strongly separated groups (because of 3 species).")
-print("   - Outliers: typically none, values form distinct clusters.\n")
+    # Count outliers
+    outliers = df[(df[col] < lower) | (df[col] > upper)][col]
 
-print("4) Petal width (cm):")
-print("   - Distribution: also shows clear class separation.")
-print("   - Outliers: normally none, values lie in three clean bands.\n")
+    # Basic distribution comment
+    if df[col].skew() == 0:
+        dist = "symmetrical distribution"
+    elif df[col].skew() > 0:
+        dist = "right-skewed distribution"
+    else:
+        dist = "left-skewed distribution"
+
+    print(f"  - Distribution: {dist}")
+    print(f"  - IQR: {iqr:.3f}")
+    print(f"  - Outlier range: < {lower:.2f} or > {upper:.2f}")
+
+    if outliers.empty:
+        print("  - Outliers: No significant outliers detected.\n")
+    else:
+        print(f"  - Outliers detected: {list(outliers.values)}\n")
