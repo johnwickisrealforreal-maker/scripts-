@@ -4,92 +4,94 @@ distance measure. Randomly initialize a cluster mean as one of the data
 points. Iterate at least for 10 iterations. After iterations are over, print the
 final cluster means for each of the clusters.
 
-# program21_iris_kmeans_manual.py
-# Manual K-Means for Iris dataset (K = 4), 10 iterations, Euclidean distance
+# program21_iris_manual_kmeans.py
+# Manual K-Means for IRIS dataset
+# K = 4 clusters, Euclidean distance, 10 iterations
 
-import random
-import math
 import numpy as np
+import random
 from sklearn.datasets import load_iris
 
-# reproducible randomness
+# For reproducibility
 RNG_SEED = 42
-random.seed(RNG_SEED)
 np.random.seed(RNG_SEED)
+random.seed(RNG_SEED)
 
-# Load Iris dataset
+# ---------------------------------------------------------
+# Load the IRIS dataset (150 samples × 4 features)
+# ---------------------------------------------------------
 iris = load_iris()
-X = iris.data            # shape (150, 4)
+X = iris.data
 n_samples, n_features = X.shape
 
-K = 4                    # **** K = 4 as question asks ****
-n_iters = 10
+K = 4
+ITERATIONS = 10
 
-def euclidean(a, b):
-    return np.linalg.norm(a - b, axis=1)
+# ---------------------------------------------------------
+# Euclidean distance function (vectorized)
+# ---------------------------------------------------------
+def euclidean(points, centroid):
+    return np.linalg.norm(points - centroid, axis=1)
 
-# ==============================
-# Step 1: Random initialization
-# ==============================
-initial_idx = np.random.choice(n_samples, size=K, replace=False)
-centroids = X[initial_idx].astype(float)
+# ---------------------------------------------------------
+# Step 1 — Random initialization of centroids
+# ---------------------------------------------------------
+initial_indices = np.random.choice(n_samples, size=K, replace=False)
+centroids = X[initial_indices].astype(float)
 
-print("Initial centroids (random data points):")
+print("Initial Centroids (randomly chosen data points):")
 for i, c in enumerate(centroids, 1):
     print(f"  m{i} = {np.round(c, 4)}")
 print()
 
-# ==============================
-# K-Means Main Loop
-# ==============================
-for it in range(1, n_iters + 1):
+# ---------------------------------------------------------
+# K-Means Iterations
+# ---------------------------------------------------------
+for it in range(1, ITERATIONS + 1):
 
-    # Step 2: Assign clusters based on distance
-    distances = np.zeros((n_samples, K))
+    # Step 2 — Compute distance matrix and assign clusters
+    distance_matrix = np.zeros((n_samples, K))
     for k in range(K):
-        distances[:, k] = euclidean(X, centroids[k])
+        distance_matrix[:, k] = euclidean(X, centroids[k])
 
-    labels = np.argmin(distances, axis=1)  # cluster assignment vector
+    labels = np.argmin(distance_matrix, axis=1)
 
-    # Step 3: Compute SSE for diagnostics
+    # Step 3 — Compute SSE (optional diagnostics)
     sse = 0.0
     for k in range(K):
-        pts = X[labels == k]
-        if pts.size > 0:
-            sse += np.sum((pts - centroids[k])**2)
+        points = X[labels == k]
+        if points.size > 0:
+            sse += np.sum((points - centroids[k]) ** 2)
 
-    # Step 4: Recompute centroids
+    # Step 4 — Recompute centroids
     new_centroids = np.zeros_like(centroids)
     for k in range(K):
-        assigned = X[labels == k]
-        if assigned.shape[0] == 0:
-            # empty cluster → reinitialize to random point
+        group = X[labels == k]
+        if group.shape[0] == 0:
+            # Handle empty cluster
             ridx = np.random.choice(n_samples)
             new_centroids[k] = X[ridx]
-            print(f"Iteration {it}: Cluster {k+1} empty → reinitialized to point {ridx}")
+            print(f"Iteration {it}: Cluster {k+1} empty → reinitialized to sample index {ridx}")
         else:
-            new_centroids[k] = np.mean(assigned, axis=0)
+            new_centroids[k] = np.mean(group, axis=0)
 
-    # ========== Print iteration results ==========
     print(f"Iteration {it} summary:")
     for k in range(K):
-        size = np.sum(labels == k)
-        print(f"  Cluster {k+1}: size = {size}, centroid = {np.round(new_centroids[k], 4)}")
+        print(f"  Cluster {k+1}: size = {np.sum(labels == k)}, centroid = {np.round(new_centroids[k], 4)}")
     print(f"  SSE = {sse:.4f}\n")
 
     centroids = new_centroids
 
-
-# ==============================
+# ---------------------------------------------------------
 # Final Output
-# ==============================
-print("\nFinal cluster means after 10 iterations:")
+# ---------------------------------------------------------
+print("Final Cluster Means after 10 iterations:")
 for k in range(K):
     print(f"  m{k+1} = {np.round(centroids[k], 6)}")
 
-# also print cluster sizes
+# Compute final labels for cluster size summary
 final_labels = np.argmin(np.array([euclidean(X, centroids[k]) for k in range(K)]).T, axis=1)
 
-print("\nFinal cluster sizes:")
+print("\nFinal Cluster Sizes:")
 for k in range(K):
     print(f"  Cluster {k+1}: {np.sum(final_labels == k)} points")
