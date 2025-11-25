@@ -4,39 +4,40 @@ available in the dataset. 2. Create a histogram for each feature in the
 dataset to illustrate the feature distributions.
 
 
-# program11_iris_features_hist.py
-# Iris dataset: feature listing + histograms
+# program11_iris_features_hist_csv.py
+# Iris dataset: feature listing + histograms (using CSV file)
 
-from sklearn.datasets import load_iris
+import pandas as pd
 import matplotlib.pyplot as plt
 
-iris = load_iris()
+# 1) Load the dataset from CSV file
+df = pd.read_csv("iris.csv")      # <-- your uploaded file name
 
-# 1) List down the features and their types
 print("---- Iris Dataset Feature Information ----\n")
 
-print("Features:")
-for fname in iris.feature_names:
-    print(f"  - {fname} : numeric")
+# List features and their types
+print("Features and Types:")
+for col in df.columns:
+    if col != "species":
+        print(f"  - {col} : numeric")
+    else:
+        print(f"  - {col} : nominal")
 
-print("\nTarget Attribute:")
-print("  - species : nominal")
-
+# List species classes
 print("\nSpecies Classes:")
-for cls in iris.target_names:
+for cls in df["species"].unique():
     print("  -", cls)
 
-# 2) Histograms of each feature
-data = iris.data
-feature_names = iris.feature_names
+# 2) Histograms for each numeric feature
+numeric_features = df.select_dtypes(include=['float64', 'int64']).columns
 
 print("\nHistograms will open in separate windows...")
 
-for i in range(data.shape[1]):
+for col in numeric_features:
     plt.figure()
-    plt.hist(data[:, i], bins=10)
-    plt.title(f"Histogram of {feature_names[i]}")
-    plt.xlabel(feature_names[i])
+    plt.hist(df[col], bins=10)
+    plt.title(f"Histogram of {col}")
+    plt.xlabel(col)
     plt.ylabel("Frequency")
     plt.tight_layout()
     plt.show()
