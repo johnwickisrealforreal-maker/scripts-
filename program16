@@ -4,18 +4,48 @@ Titanic ship. Write a code to check how the price of the ticket (column
 name: 'fare') for each passenger is distributed by plotting a histogram.
 
 
+# program16_titanic_fare_distribution.py
+# Titanic dataset: Detailed fare distribution analysis + histogram
+
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 
-# Load the inbuilt Titanic dataset
+# ---------------- Load the inbuilt Titanic dataset ----------------
 titanic = sns.load_dataset("titanic")
 
-# Show first few rows (optional but useful in CLI)
-print(titanic.head())
+print("------ Titanic Dataset Loaded ------\n")
+print(titanic.head(), "\n")
+print("Shape:", titanic.shape, "\n")
+print(titanic.info(), "\n")
 
-# Plot histogram for 'fare'
-plt.hist(titanic['fare'].dropna(), bins=30)
-plt.xlabel("Fare")
+# ---------------- Check 'fare' column data ----------------
+print("\n------ Fare Column Analysis ------")
+print("Number of missing values in 'fare':", titanic['fare'].isnull().sum())
+print("\nSummary Statistics of Fare:")
+print(titanic['fare'].describe(), "\n")
+
+# ---------------- Histogram of Fare ----------------
+plt.figure(figsize=(10, 5))
+plt.hist(titanic['fare'].dropna(), bins=30, edgecolor='black')
+plt.xlabel("Fare Amount")
 plt.ylabel("Frequency")
-plt.title("Distribution of Titanic Passenger Fare")
+plt.title("Histogram: Distribution of Titanic Passenger Fare")
+plt.tight_layout()
 plt.show()
+
+# ---------------- Histogram with KDE using seaborn (optional) ----------------
+plt.figure(figsize=(10, 5))
+sns.histplot(titanic['fare'].dropna(), bins=30, kde=True)
+plt.xlabel("Fare Amount")
+plt.ylabel("Frequency")
+plt.title("Fare Distribution with KDE (Smooth Curve)")
+plt.tight_layout()
+plt.show()
+
+# ---------------- Interpretation ----------------
+print("\n------ Interpretation of Fare Distribution ------")
+print("1. Majority of passengers paid low fares (left-skewed distribution).")
+print("2. Some passengers paid extremely high fares, creating a long right tail.")
+print("3. KDE curve also shows that fare values are concentrated at lower ranges.")
+print("4. High-fare outliers typically belonged to 1st class passengers.\n")
