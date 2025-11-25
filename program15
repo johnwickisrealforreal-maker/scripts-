@@ -8,46 +8,52 @@ ship. Use the Seaborn library to see if we can find any patterns in the data.
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Load inbuilt Titanic dataset
+# ---------- Load the inbuilt Titanic dataset ----------
 titanic = sns.load_dataset("titanic")
 
-print("---- Dataset Loaded ----")
+print("---- DATASET LOADED ----\n")
 print(titanic.head(), "\n")
 print("Shape:", titanic.shape, "\n")
 print(titanic.info(), "\n")
 
-# Plot 1: Survival count
+
+# ---------- 1. Survival Count ----------
 plt.figure()
 sns.countplot(x="survived", data=titanic)
 plt.title("Survival Count")
 plt.show()
 
-# Plot 2: Survival by sex
+
+# ---------- 2. Survival by Sex ----------
 plt.figure()
 sns.countplot(x="sex", hue="survived", data=titanic)
 plt.title("Survival by Sex")
 plt.show()
 
-# Plot 3: Survival by passenger class
+
+# ---------- 3. Survival by Passenger Class ----------
 plt.figure()
 sns.countplot(x="pclass", hue="survived", data=titanic)
 plt.title("Survival by Passenger Class")
 plt.show()
 
-# Plot 4: Age distribution
+
+# ---------- 4. Age Distribution ----------
 plt.figure()
 sns.histplot(titanic["age"].dropna(), bins=20, kde=True)
 plt.title("Age Distribution")
 plt.show()
 
-# Plot 5: Survival by age (boxplot)
+
+# ---------- 5. Age vs Survival (Boxplot) ----------
 plt.figure()
 sns.boxplot(x="survived", y="age", data=titanic)
 plt.title("Age vs Survival")
 plt.show()
 
-# Plot 6: Heatmap – correlation of numeric columns
+
+# ---------- 6. Correlation Heatmap ----------
 plt.figure()
-sns.heatmap(titanic.corr(), annot=True, cmap="coolwarm")
-plt.title("Correlation Matrix")
+sns.heatmap(titanic.select_dtypes(include="number").corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Matrix (Numeric Features)")
 plt.show()
