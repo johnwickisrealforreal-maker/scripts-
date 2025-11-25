@@ -6,31 +6,85 @@ percentiles using separate commands, for each feature. Create a histogram
 for each feature in the dataset to illustrate the feature distributions.
 
 
-import matplotlib as plt
+# -----------------------------------------------------------
+# Q3: Statistical Analysis + Histogram for House Price Dataset
+# -----------------------------------------------------------
 
-# Create a small sample dataset
-data = {
-    'Area_sqft': [1200, 1500, 1800, 2400, 3000, 3500],
-    'Bedrooms': [2, 3, 3, 4, 4, 5],
-    'Bathrooms': [1, 2, 2, 3, 3, 4],
-    'Price_lakhs': [45, 60, 72, 90, 120, 150]
-}
-
-df = pd.DataFrame(data)
-print("Standard Deviation = ", df.std(numeric_only=True))
-print("_______________________________________________________")
-
-print("Variance = ", df.var(numeric_only=True))
-print("_______________________________________________________")
-
-print("Averages = ", df.mean(numeric_only=True))
-print("_______________________________________________________")
-
-print("Percentiles =", df.describe( percentiles=[0.25,0.5,0.75]).T[['25%','50%','75%']])
-print("_______________________________________________________")
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 
-print("Making Histogram for the numerical featues ")
-df.hist(figsize=(8,6) , bins=5 , color='skyblue' , edgecolor='black')
+
+df = pd.read_csv("house_price.csv")   # <-- replace with your filename
+print("\nDataset Loaded Successfully!\n")
+
+
+# -------------------------------------------------------------------
+# STEP 1: Clean numeric columns (Price, NetSquareMeters, GrossSquareMeters)
+# because your dataset has values like "3,100,000TL" or "120 m2"
+# -------------------------------------------------------------------
+
+def clean_numeric(col):
+    return (col.astype(str)
+            .str.replace("TL", "", regex=False)
+            .str.replace("m2", "", regex=False)
+            .str.replace(",", "", regex=False)
+            .str.extract(r"(\d+\.?\d*)")[0]
+            .astype(float)
+            )
+
+numeric_columns = []
+
+for col in df.columns:
+    # Try converting columns that look numeric after cleaning
+    try:
+        cleaned = clean_numeric(df[col])
+        if cleaned.notna().sum() > 0:   # at least some numeric values found
+            df[col] = cleaned
+            numeric_columns.append(col)
+    except:
+        pass
+
+print("Detected Numeric Columns:", numeric_columns)
+print("----------------------------------------------------\n")
+
+
+# -------------------------------------------------------------------
+# STEP 2: Handle Missing Values
+# -------------------------------------------------------------------
+df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
+print("Missing numeric values filled with column mean.\n")
+
+
+# -------------------------------------------------------------------
+# STEP 3: Compute Standard Deviation, Variance, Percentiles
+# -------------------------------------------------------------------
+print("📌 STANDARD DEVIATION (Feature-wise):")
+print(df[numeric_columns].std())
+print("\n----------------------------------------------------")
+
+print("📌 VARIANCE (Feature-wise):")
+print(df[numeric_columns].var())
+print("\n----------------------------------------------------")
+
+print("📌 PERCENTILES (25%, 50%, 75%):")
+percentiles = df[numeric_columns].describe(percentiles=[0.25, 0.5, 0.75]).T[['25%', '50%', '75%']]
+print(percentiles)
+print("\n----------------------------------------------------")
+
+
+# -------------------------------------------------------------------
+# STEP 4: Histogram for each numerical feature
+# -------------------------------------------------------------------
+print("Generating Histograms for all Numerical Features...")
+
+df[numeric_columns].hist(
+    figsize=(12, 10),
+    bins=12,
+    edgecolor='black'
+)
+
+plt.suptitle("Feature Distribution Histograms", fontsize=16)
 plt.tight_layout()
 plt.show()
