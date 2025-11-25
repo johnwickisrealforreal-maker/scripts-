@@ -5,49 +5,85 @@ Titanic Dataset).
 
 
 
-import pandas as pd 
+# TITANIC PRACTICAL – ALL REQUIRED OPERATIONS + EXTRA INBUILT FUNCTIONS
+import pandas as pd
 
-# IF excel / csv given then read 
-# Read data from CSV
-#data_csv = pd.read_csv("titanic.csv")
-#print("\n--- Data from CSV ---")
-#print(data_csv.head())
+# ---------------- OPTION A: INBUILT SEABORN DATASET (COMMENTED OUT) -------------
+# import seaborn as sns
+# df = sns.load_dataset("titanic")
+# ------------------------------------------------------------------------------
 
-# Read data from Excel (if available)
-# data_xls = pd.read_excel("titanic.xlsx")
-# print("\n--- Data from Excel ---")
-# print(data_xls.head())
+# ---------------- OPTION B: MANUAL CSV UPLOAD (MAIN) ---------------------------
+df = pd.read_csv("titanic_real.csv")   # << replace with your file name
+# ------------------------------------------------------------------------------
 
-import seaborn as sns
-data = sns.load_dataset("titanic")
-data.to_csv('titanic.csv', index=False)
-data_csv = pd.read_csv('titanic.csv')
-print(data_csv.head())
-print("_______________________________________________________")
+print("\n============= FIRST 5 ROWS =============")
+print(df.head())
 
-# Indexing and Selecting Cols
-print("Selecting Survived Age Sex cols")
-print(data_csv[['survived','age','sex']])
-print("_______________________________________________________")
+print("\n============= LAST 5 ROWS (extra) =============")
+print(df.tail())
 
-print("selecting first 5 rows using iloc")
-print(data_csv.iloc[0:5])
-print("_______________________________________________________")
+print("\n============= SHAPE OF DATA (rows, columns) =============")
+print(df.shape)
 
-print("selecting passengers older than 60 using loc")
-print(data_csv.loc[ data_csv['age'] >60  , ['survived','age']])
-print("_______________________________________________________")
+print("\n============= COLUMN NAMES (extra) =============")
+print(df.columns.tolist())
 
-#Sorting Data-
+print("\n============= BASIC INFO (dtype + memory) =============")
+df.info()
 
-print("Sorting by AGE")
-sorted = data_csv.sort_values(by='age', ascending=True)
-print(sorted[['age','survived']])
+print("\n============= CHECK MISSING VALUES (extra) =============")
+print(df.isnull().sum())
 
-print("_______________________________________________________")
+print("\n============= DESCRIBE NUMERIC ATTRIBUTES =============")
+print(df.describe())
 
-#Describe Attributes-
-print(data_csv.describe())
-print("_______________________________________________________")
+print("\n============= DESCRIBE CATEGORICAL ATTRIBUTES (extra) =============")
+print(df.describe(include='object'))
 
-print(data_csv.dtypes)
+print("\n============= DATA TYPES OF EACH COLUMN =============")
+print(df.dtypes)
+
+# ------------------- INDEXING & SELECTION -------------------
+
+print("\n============= SELECTING COLUMNS (loc example) =============")
+print(df.loc[:, ["Survived", "Age", "Sex"]])
+
+print("\n============= SELECTING ROW RANGE (iloc) =============")
+print(df.iloc[0:10])
+
+print("\n============= SELECTING PASSENGERS AGE > 60 =============")
+print(df.loc[df['Age'] > 60, ["Survived", "Age", "Sex"]])
+
+print("\n============= SELECTING SPECIFIC CELL (extra) =============")
+print(df.at[0, "Age"])   # single value
+print(df.iat[0, 5])      # same by integer index
+
+# ------------------- SORTING -------------------
+
+print("\n============= SORT BY AGE (ascending) =============")
+print(df.sort_values(by="Age"))
+
+print("\n============= SORT BY FARE (descending, extra) =============")
+print(df.sort_values(by="Fare", ascending=False))
+
+print("\n============= SORT BY MULTIPLE COLUMNS (extra) =============")
+print(df.sort_values(by=["Pclass", "Fare"], ascending=[True, False]))
+
+# ------------------- MORE INBUILT FUNCTIONS (BONUS) -------------------
+
+print("\n============= UNIQUE VALUES IN 'Sex' (extra) =============")
+print(df["Sex"].unique())
+
+print("\n============= VALUE COUNTS OF 'Pclass' (extra) =============")
+print(df["Pclass"].value_counts())
+
+print("\n============= CHECK INDEX (extra) =============")
+print(df.index)
+
+print("\n============= SAMPLE RANDOM ROWS (extra) =============")
+print(df.sample(5))
+
+print("\n============= CORRELATION MATRIX (extra) =============")
+print(df.corr(numeric_only=True))
+
