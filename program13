@@ -9,49 +9,50 @@ c. Number of persons state wise vaccinated for second dose in India
 
 import pandas as pd
 
-# Load dataset (CSV must be in same folder)
+# --------- Load dataset ----------
+# Just upload the file in your environment and give its name below
 df = pd.read_csv("covid_vaccine_statewise.csv")
 
-# a) Describe the dataset
-print("---- (a) Dataset Description ----\n")
-print("Columns:")
+# --------- (a) Describe the dataset ----------
+print("\n---- (a) DATASET DESCRIPTION ----\n")
+
+print("Columns Present:")
 print(df.columns.tolist(), "\n")
 
-print("Statistical Summary (numeric columns):")
+print("\nStatistical Summary (Numerical Columns):\n")
 print(df.describe(), "\n")
 
-print("Dataset Info:")
+print("\nDataset Info:\n")
 print(df.info(), "\n")
 
-# b) Number of persons state-wise vaccinated for first dose
-print("---- (b) State-wise First Dose Vaccinations ----\n")
 
-# Common column names in the dataset:
-# 'State', 'First Dose Administered' or 'First Dose Administered.1'
-# We detect the correct column automatically.
-first_dose_col = None
-for col in df.columns:
-    if "First" in col and "Dose" in col:
-        first_dose_col = col
-        break
+# --------- Detect correct column names automatically ----------
+def find_column(keyword):
+    """Finds the first column containing a keyword."""
+    for col in df.columns:
+        if keyword.lower() in col.lower():
+            return col
+    return None
 
-if first_dose_col is None:
-    raise ValueError("First Dose column not found. Please check CSV column names.")
+first_dose_col = find_column("First Dose")
+second_dose_col = find_column("Second Dose")
 
-first_dose = df.groupby("State")[first_dose_col].max().sort_values(ascending=False)
-print(first_dose, "\n")
+if first_dose_col is None or second_dose_col is None:
+    raise ValueError("Dose columns not found. Check CSV column names.")
 
-# c) Number of persons state-wise vaccinated for second dose
-print("---- (c) State-wise Second Dose Vaccinations ----\n")
 
-second_dose_col = None
-for col in df.columns:
-    if "Second" in col and "Dose" in col:
-        second_dose_col = col
-        break
+# --------- (b) State-wise FIRST DOSE vaccinations ----------
+print("\n---- (b) STATE-WISE FIRST DOSE ----\n")
 
-if second_dose_col is None:
-    raise ValueError("Second Dose column not found. Please check CSV column names.")
+# We take max() because the dataset is cumulative day-wise
+first_dose_statewise = df.groupby("State")[first_dose_col].max().sort_values(ascending=False)
 
-second_dose = df.groupby("State")[second_dose_col].max().sort_values(ascending=False)
-print(second_dose, "\n")
+print(first_dose_statewise, "\n")
+
+
+# --------- (c) State-wise SECOND DOSE vaccinations ----------
+print("\n---- (c) STATE-WISE SECOND DOSE ----\n")
+
+second_dose_statewise = df.groupby("State")[second_dose_col].max().sort_values(ascending=False)
+
+print(second_dose_statewise, "\n")
