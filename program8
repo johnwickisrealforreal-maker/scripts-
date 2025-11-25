@@ -5,47 +5,63 @@ According to the decision tree you have made from the previous training
 data set, what is the decision for the test data: [Age = 21-35, Income = Low,
 Gender = Male, Marital Status = Married]?
 
-# Program 8: Decision Tree using sklearn for Cosmetics Dataset (Program 8)
+# =====================================================
+# PROGRAM 8 : Decision Tree (Library Commands)
+# =====================================================
 
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier, export_text
 
-# Dataset
-data = {
-    'Age': ['<21', '<21', '21-35', '21-35', '>35', '>35', '21-35', '<21', '>35', '21-35'],
-    'Income': ['High', 'High', 'High', 'Medium', 'Low', 'Low', 'Medium', 'Low', 'Medium', 'Low'],
-    'Gender': ['Male', 'Female', 'Female', 'Male', 'Male', 'Female', 'Female', 'Female', 'Male', 'Female'],
-    'MaritalStatus': ['Single', 'Single', 'Married', 'Single', 'Married', 'Married', 'Single', 'Married', 'Single', 'Married'],
-    'Buys': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'Yes', 'No', 'Yes']
-}
-df = pd.DataFrame(data)
+# =====================================================
+# 1. LOAD CSV DATASET (LIPSTICK DATA)
+# =====================================================
+df = pd.read_csv("lipstick.csv")   # <-- your uploaded file
+print("\n----- DATASET LOADED -----")
+print(df)
 
-# Encoding
-le = LabelEncoder()
+# =====================================================
+# 2. LABEL ENCODING FOR CATEGORICAL COLUMNS
+# =====================================================
+encoders = {}
 for col in df.columns:
-    df[col] = le.fit_transform(df[col])
+    if df[col].dtype == "object":
+        encoders[col] = LabelEncoder()
+        df[col] = encoders[col].fit_transform(df[col])
 
-X = df[['Age', 'Income', 'Gender', 'MaritalStatus']]
+# Features (X) and Target (y)
+X = df[['Age', 'Income', 'Gender', 'Ms']]   # Ms = Marital Status
 y = df['Buys']
 
-# Model training
-model = DecisionTreeClassifier(criterion='entropy', random_state=0)
+# =====================================================
+# 3. TRAIN DECISION TREE (ENTROPY)
+# =====================================================
+model = DecisionTreeClassifier(criterion="entropy", random_state=0)
 model.fit(X, y)
 
-# Show tree rules
-print("\n--- Decision Tree Rules ---")
+# =====================================================
+# 4. PRINT TREE RULES
+# =====================================================
+print("\n----- DECISION TREE RULES -----")
 print(export_text(model, feature_names=list(X.columns)))
 
-# Test data for Program 8
+# =====================================================
+# 5. TEST INPUT FOR PROGRAM 8
+#    [Age = 21-35, Income = Low, Gender = Male, Ms = Married]
+# =====================================================
 test = pd.DataFrame([["21-35", "Low", "Male", "Married"]],
-                    columns=['Age', 'Income', 'Gender', 'MaritalStatus'])
+                    columns=['Age', 'Income', 'Gender', 'Ms'])
 
+# Encode test data using SAME encoders
 for col in test.columns:
-    test[col] = le.fit_transform(test[col])
+    test[col] = encoders[col].transform(test[col])
 
-# Prediction
-prediction = model.predict(test)
-print("\n--- Program 8: Prediction ---")
-print("Test Input: [Age 21-35, Income=Low, Gender=Male, MaritalStatus=Married]")
-print("Decision (Buys?):", "Yes" if prediction[0] == 1 else "No")
+# Predict
+pred = model.predict(test)[0]
+
+# Convert encoded output back to Yes/No
+yes_code = encoders['Buys'].transform(['Yes'])[0]
+
+print("\n----- PROGRAM 8: FINAL PREDICTION -----")
+print("Test Input: [Age 21-35, Income Low, Gender Male, Marital Status Married]")
+print("Decision (Buys?):", "Yes" if pred == yes_code else "No")
