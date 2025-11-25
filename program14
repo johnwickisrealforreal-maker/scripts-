@@ -6,26 +6,27 @@ C.. Number of females vaccinated
 
 
 # program14_covid_vaccine_genderwise.py
-# COVID vaccine analytics: describe + male/female vaccination counts
+# COVID vaccine analytics: describe + male/female vaccination totals
 
 import pandas as pd
 
-# Load dataset (CSV must be in same folder)
-df = pd.read_csv("covid_vaccine_statewise.csv")
+# --------- Load dataset ----------
+df = pd.read_csv("covid_vaccine_statewise.csv")   # upload CSV and keep same name
 
-# A) Describe the dataset
-print("---- (A) Dataset Description ----\n")
+# --------- (A) Describe the dataset ----------
+print("\n---- (A) DATASET DESCRIPTION ----\n")
 
-print("Columns:")
+print("Columns Present:")
 print(df.columns.tolist(), "\n")
 
-print("Statistical Summary (numeric columns):")
+print("\nStatistical Summary (Numerical Columns):\n")
 print(df.describe(), "\n")
 
-print("Dataset Info:")
+print("\nDataset Info:\n")
 print(df.info(), "\n")
 
-# Detect Male and Female columns (different datasets have slightly different names)
+
+# --------- Detect Male and Female vaccination columns ----------
 male_col = None
 female_col = None
 
@@ -37,16 +38,20 @@ for col in df.columns:
         female_col = col
 
 if male_col is None:
-    raise ValueError("Male vaccination column not found. Check CSV.")
+    raise ValueError("❌ Male vaccination column not found. Check CSV column names.")
 if female_col is None:
-    raise ValueError("Female vaccination column not found. Check CSV.")
+    raise ValueError("❌ Female vaccination column not found. Check CSV column names.")
 
-# B) Number of males vaccinated (cumulative)
-print("---- (B) Total Number of Males Vaccinated ----\n")
-total_males = df[male_col].sum()
-print("Total Males Vaccinated:", total_males, "\n")
 
-# C) Number of females vaccinated (cumulative)
-print("---- (C) Total Number of Females Vaccinated ----\n")
-total_females = df[female_col].sum()
-print("Total Females Vaccinated:", total_females, "\n")
+# --------- (B) Total number of males vaccinated ----------
+print("\n---- (B) TOTAL NUMBER OF MALES VACCINATED ----\n")
+
+total_males = df[male_col].sum()   # cumulative across rows
+print(f"Total Males Vaccinated: {total_males}\n")
+
+
+# --------- (C) Total number of females vaccinated ----------
+print("\n---- (C) TOTAL NUMBER OF FEMALES VACCINATED ----\n")
+
+total_females = df[female_col].sum()   # cumulative across rows
+print(f"Total Females Vaccinated: {total_females}\n")
