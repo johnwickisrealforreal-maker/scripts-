@@ -7,12 +7,15 @@ population of a cluster around m3? 3] What is the updated value of m1,
 m2, m3? 
 
 
-# program10_kmeans_manual.py
-# Manual 1-step k-means (pure Python)
+# =========================================================
+# PROGRAM 10 : Manual K-Means (3 Clusters, No Libraries)
+# =========================================================
 
 import math
 
-# Points
+# ---------------------------------------------------------
+# 1. Points given in the question
+# ---------------------------------------------------------
 points = {
     'P1': (2, 10),
     'P2': (2, 5),
@@ -29,58 +32,73 @@ m1 = points['P1']   # C1
 m2 = points['P4']   # C2
 m3 = points['P7']   # C3
 
+# ---------------------------------------------------------
+# Distance Function
+# ---------------------------------------------------------
 def euclidean(a, b):
     return math.hypot(a[0] - b[0], a[1] - b[1])
 
-# Step 1: compute distances and assign clusters
-assignments = {}   # name -> (cluster, d1, d2, d3)
+# ---------------------------------------------------------
+# 2. Compute distances & assign clusters
+# ---------------------------------------------------------
+assignments = {}  # point -> (cluster, d1, d2, d3)
+
 for name, p in points.items():
     d1 = euclidean(p, m1)
     d2 = euclidean(p, m2)
     d3 = euclidean(p, m3)
     dmin = min(d1, d2, d3)
+
     if dmin == d1:
         cluster = 'C1'
     elif dmin == d2:
         cluster = 'C2'
     else:
         cluster = 'C3'
+
     assignments[name] = (cluster, d1, d2, d3)
 
-# Print table
-print("Point |   x    y  |  d->m1    d->m2    d->m3   | Assigned")
+# ---------------------------------------------------------
+# Print nice table
+# ---------------------------------------------------------
+print("Point |   x    y  |  d->m1    d->m2    d->m3   | Cluster")
 print("-------------------------------------------------------------")
 for name in sorted(points.keys()):
-    p = points[name]
-    cl, d1, d2, d3 = assignments[name]
-    print(f"{name:3s}   | {p[0]:5.2f} {p[1]:5.2f} | {d1:8.4f} {d2:8.4f} {d3:8.4f} | {cl}")
+    x, y = points[name]
+    c, d1, d2, d3 = assignments[name]
+    print(f"{name:3s}  | {x:5.2f} {y:5.2f} | {d1:8.4f} {d2:8.4f} {d3:8.4f} | {c}")
 
-# Q1
+# ---------------------------------------------------------
+# Q1: Cluster of P6
+# ---------------------------------------------------------
 p6_cluster = assignments['P6'][0]
-print(f"\nAnswer 1) P6 belongs to: {p6_cluster}")
+print("\nAnswer 1) P6 belongs to:", p6_cluster)
 
-# Q2: population of cluster around m3 (C3)
-cluster_counts = {'C1': 0, 'C2': 0, 'C3': 0}
-for v in assignments.values():
-    cluster_counts[v[0]] += 1
-print(f"Answer 2) Population of cluster around m3 (C3): {cluster_counts['C3']}")
+# ---------------------------------------------------------
+# Q2: Population of cluster around m3 (C3)
+# ---------------------------------------------------------
+count = {'C1': 0, 'C2': 0, 'C3': 0}
+for c, _, _, _ in assignments.values():
+    count[c] += 1
 
-# Step 2: recompute centroids
-def recompute_centroid(assignments, cname):
+print("Answer 2) Population of cluster around m3 (C3):", count['C3'])
+
+# ---------------------------------------------------------
+# 3. Recompute new centroids
+# ---------------------------------------------------------
+def new_centroid(cluster_name):
     xs, ys = [], []
-    for name, (cl, _, _, _) in assignments.items():
-        if cl == cname:
-            x, y = points[name]
-            xs.append(x); ys.append(y)
-    if not xs:
-        return None
+    for name in points:
+        if assignments[name][0] == cluster_name:
+            xs.append(points[name][0])
+            ys.append(points[name][1])
     return (sum(xs)/len(xs), sum(ys)/len(ys))
 
-m1_new = recompute_centroid(assignments, 'C1')
-m2_new = recompute_centroid(assignments, 'C2')
-m3_new = recompute_centroid(assignments, 'C3')
+m1_new = new_centroid('C1')
+m2_new = new_centroid('C2')
+m3_new = new_centroid('C3')
 
-print("\nAnswer 3) Updated centroids:")
+print("\nAnswer 3) Updated Centroids:")
 print(f"  m1 (new) = ({m1_new[0]:.4f}, {m1_new[1]:.4f})")
 print(f"  m2 (new) = ({m2_new[0]:.4f}, {m2_new[1]:.4f})")
 print(f"  m3 (new) = ({m3_new[0]:.4f}, {m3_new[1]:.4f})")
