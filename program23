@@ -7,59 +7,74 @@ import pandas as pd
 import numpy as np
 from math import log2
 
-# ----------------------------------------
-# Load the dataset
-# ----------------------------------------
-# Uncomment when you have the CSV:
-# df = pd.read_csv("yourfile.csv")
+# ======================================================
+# 1. LOAD DATA (Use your uploaded CSV)
+# ======================================================
+# df = pd.read_csv("Q23_data.csv")   # <-- uncomment this in exam
 
-# Using mock data reconstructed from the image:
+# ---- Reconstructed dataset from image (for demo) -----
 data = {
     "Age": ["Young","Young","Middle","Old","Old","Old","Middle","Young",
             "Young","Old","Young","Middle","Middle","Old"],
+    "Income": ["High","High","High","Medium","Low","Low","Low","Medium",
+               "Low","Medium","Medium","Medium","High","Medium"],
+    "Married": ["No","No","No","No","Yes","Yes","Yes","No",
+                "Yes","No","Yes","No","Yes","No"],
+    "Health": ["Fair","Good","Fair","Fair","Fair","Good","Good","Fair",
+               "Fair","Fair","Good","Good","Fair","Good"],
     "Class": ["No","No","Yes","Yes","Yes","No","Yes","No",
               "Yes","Yes","Yes","Yes","Yes","No"]
 }
-
 df = pd.DataFrame(data)
 
-# Normalize (Young/young)
+# Normalize age (Young/young)
 df["Age"] = df["Age"].str.capitalize()
 
-# ----------------------------------------
-# Frequency table for Age
-# ----------------------------------------
+print("===== Dataset Loaded =====")
+print(df, "\n")
+
+# ======================================================
+# 2. FREQUENCY TABLE FOR AGE
+# ======================================================
 freq_table = df["Age"].value_counts()
-print("Frequency Table for Age:\n", freq_table, "\n")
+print("===== FREQUENCY TABLE FOR AGE =====")
+print(freq_table, "\n")
 
-# ----------------------------------------
-# Entropy function
-# ----------------------------------------
-def entropy(series):
-    values = series.value_counts()
-    total = len(series)
-    result = 0
-    for count in values:
-        p = count / total
-        result += -p * log2(p)
-    return result
+# ======================================================
+# 3. ENTROPY FUNCTION
+# ======================================================
+def entropy(col):
+    counts = col.value_counts()
+    total = len(col)
+    ent = 0
+    for c in counts:
+        p = c / total
+        ent += -p * log2(p)
+    return ent
 
-# ----------------------------------------
-# Entropy of entire dataset
-# ----------------------------------------
+# ======================================================
+# 4. ENTROPY OF THE TOTAL DATASET (Target = Class)
+# ======================================================
 entropy_total = entropy(df["Class"])
-print("Entropy of Dataset =", entropy_total)
+print("Entropy of Entire Dataset = ", round(entropy_total, 4), "\n")
 
-# ----------------------------------------
-# Weighted Entropy after splitting on Age
-# ----------------------------------------
+# ======================================================
+# 5. ENTROPY OF SPLITS BASED ON AGE
+# ======================================================
 weighted_entropy = 0
-for age, subset in df.groupby("Age"):
+
+print("===== ENTROPY FOR EACH AGE GROUP =====")
+for age_group, subset in df.groupby("Age"):
     e = entropy(subset["Class"])
-    weighted_entropy += (len(subset) / len(df)) * e
-    print(f"Entropy(Age = {age}) =", e)
+    weight = len(subset) / len(df)
+    weighted_entropy += weight * e
+    print(f"Age = {age_group:6s}  | Count = {len(subset):2d} | Entropy = {round(e,4)}")
 
-# Information Gain
+print("\nWeighted Entropy =", round(weighted_entropy, 4))
+
+# ======================================================
+# 6. INFORMATION GAIN
+# ======================================================
 IG = entropy_total - weighted_entropy
-print("\nInformation Gain for Age =", IG)
-
+print("\n===== INFORMATION GAIN WHEN SPLITTING ON 'AGE' =====")
+print("Information Gain =", round(IG, 4))
