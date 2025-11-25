@@ -9,42 +9,53 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier, export_text
 
-# Step 1: Create dataset (mock CSV-like structure)
-data = {
-    'Age': ['<21', '<21', '21-35', '21-35', '>35', '>35', '21-35', '<21', '>35', '21-35'],
-    'Income': ['High', 'High', 'High', 'Medium', 'Low', 'Low', 'Medium', 'Low', 'Medium', 'Low'],
-    'Gender': ['Male', 'Female', 'Female', 'Male', 'Male', 'Female', 'Female', 'Female', 'Male', 'Female'],
-    'MaritalStatus': ['Single', 'Single', 'Married', 'Single', 'Married', 'Married', 'Single', 'Married', 'Single', 'Married'],
-    'Buys': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'Yes', 'No', 'Yes']
-}
-
-df = pd.DataFrame(data)
-print("\n--- Cosmetics Shop Dataset ---")
+# =========================================================
+# 1. LOAD CSV (Upload your lipstick dataset in exam)
+# =========================================================
+df = pd.read_csv("lipstick.csv")   # <-- your filename
+print("\n----- DATASET LOADED -----")
 print(df)
 
+# =========================================================
+# 2. LABEL ENCODING FOR CATEGORICAL VARIABLES
+# =========================================================
+le = LabelEncoder()
+encoders = {}   # store encoders for each column
 
-#Encoding categorical data
-le  = LabelEncoder()
 for col in df.columns:
-  df[col] = le.fit_transform(df[col])
+    if df[col].dtype == 'object':
+        encoders[col] = LabelEncoder()
+        df[col] = encoders[col].fit_transform(df[col])
 
-x = df[['Age','Income','Gender','MaritalStatus']]
+# Splitting features and target
+X = df[['Age', 'Income', 'Gender', 'Ms']]
 y = df['Buys']
 
-model = DecisionTreeClassifier(criterion ='entropy', random_state=0)
-model.fit(x,y)
-print("\n--- Decision Tree Rules ---")
-print(export_text(model, feature_names=list(x.columns)))
+# =========================================================
+# 3. TRAIN DECISION TREE USING ENTROPY
+# =========================================================
+model = DecisionTreeClassifier(criterion='entropy', random_state=0)
+model.fit(X, y)
 
-test = pd.DataFrame([['<21', 'Low', 'Female', 'Married']], columns=['Age', 'Income', 'Gender', 'MaritalStatus'])
+# =========================================================
+# 4. PRINT DECISION TREE RULES
+# =========================================================
+print("\n----- DECISION TREE RULES -----")
+print(export_text(model, feature_names=list(X.columns)))
 
-# Encode test sample using same LabelEncoder pattern
+# =========================================================
+# 5. PREDICT FOR TEST INPUT
+# =========================================================
+test = pd.DataFrame([['<21', 'Low', 'Female', 'Married']],
+                    columns=['Age', 'Income', 'Gender', 'Ms'])
+
+# Encode test data using same encoders
 for col in test.columns:
-    test[col] = le.fit_transform(test[col])
+    test[col] = encoders[col].transform(test[col])
 
-# Predict output
-prediction = model.predict(test)
-print("\n--- Prediction for Test Data ---")
-print("Test Input: [Age <21, Income=Low, Gender=Female, MaritalStatus=Married]")
-print("Decision (Buys?):", "Yes" if prediction[0] == 1 else "No")
+# Predict
+pred = model.predict(test)[0]
 
+print("\n----- TEST CASE PREDICTION -----")
+print("Input → Age=<21, Income=Low, Gender=Female, MaritalStatus=Married")
+print("Decision (Buys?):", "Yes" if pred == encoders['Buys'].transform(['Yes'])[0] else "No")
