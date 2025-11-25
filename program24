@@ -6,68 +6,79 @@ and filling in the missing values.
 import pandas as pd
 import numpy as np
 
-# ----------------------------------------------------
-# 1. Load dataset
-# ----------------------------------------------------
-# Uncomment this when you have an actual dataset CSV:
-# df = pd.read_csv("your_dataset.csv")
+# ----------------------------------------------------------------
+# 1. Create a suitable mock dataset (Categorical + Quantitative)
+# ----------------------------------------------------------------
+# Dataset includes:
+# - AgeGroup (categorical)
+# - City (categorical)
+# - Income (quantitative)
+# - HousePrice (quantitative)
+# - Rooms (quantitative, but stored as string to convert later)
 
-# Mock sample data for demonstration:
 data = {
-    "Age": [25, 30, 30, np.nan, 40, 40],
-    "Income": [50000, 60000, np.nan, 45000, 70000, 70000],
-    "Gender": ["M", "F", "F", "M", None, "M"],
-    "Rating": ["4.5", "3.0", "4.0", "5.0", "2.5", None]
+    "AgeGroup": ["20-30", "30-40", "20-30", np.nan, "40-50", "30-40"],
+    "City": ["Mumbai", "Delhi", "Delhi", "Pune", "Mumbai", None],
+    "Income": [55000, 72000, 61000, np.nan, 90000, 90000],
+    "HousePrice": [75.5, 120.0, 95.0, 110.0, np.nan, 130.0],
+    "Rooms": ["2", "3", "3", None, "4", "4"],  # stored as strings intentionally
 }
+
 df = pd.DataFrame(data)
 
-print("Original Dataset:")
-print(df, "\n")
+print("\nOriginal Dataset:\n")
+print(df)
 
-# ----------------------------------------------------
-# 2. Count unique values in each column
-# ----------------------------------------------------
-print("Unique Value Count:")
-print(df.nunique(), "\n")
+# ----------------------------------------------------------------
+# 2. Count unique values
+# ----------------------------------------------------------------
+print("\nUnique Value Counts:\n")
+print(df.nunique())
 
-# ----------------------------------------------------
-# 3. Check data type/format of each column
-# ----------------------------------------------------
-print("Column Data Types:")
-print(df.dtypes, "\n")
+# ----------------------------------------------------------------
+# 3. Check column formats (dtypes)
+# ----------------------------------------------------------------
+print("\nColumn Data Types Before Conversion:\n")
+print(df.dtypes)
 
-# ----------------------------------------------------
-# 4. Convert data types
-# ----------------------------------------------------
-# Example: convert 'Rating' from object → float
-df["Rating"] = pd.to_numeric(df["Rating"], errors="coerce")
+# ----------------------------------------------------------------
+# 4. Convert variable data types
+# ----------------------------------------------------------------
 
-# Convert Income from float → integer (downcasting allowed)
+# Convert Rooms from string → integer
+df["Rooms"] = pd.to_numeric(df["Rooms"], errors="coerce")
+
+# Convert AgeGroup to category type
+df["AgeGroup"] = df["AgeGroup"].astype("category")
+
+# Convert City to category type
+df["City"] = df["City"].astype("category")
+
+# Downcast numeric values for optimization
 df["Income"] = pd.to_numeric(df["Income"], downcast="integer")
+df["HousePrice"] = pd.to_numeric(df["HousePrice"], downcast="float")
 
-# Convert Age to integer after filling missing
-df["Age"] = df["Age"].fillna(df["Age"].mean())  # temporarily fill
-df["Age"] = df["Age"].astype(int)
+print("\nColumn Data Types After Conversion:\n")
+print(df.dtypes)
 
-print("Data Types After Conversion:")
-print(df.dtypes, "\n")
-
-# ----------------------------------------------------
+# ----------------------------------------------------------------
 # 5. Identify missing values
-# ----------------------------------------------------
-print("Missing Values in Dataset:")
-print(df.isnull().sum(), "\n")
+# ----------------------------------------------------------------
+print("\nMissing Values in Dataset:\n")
+print(df.isnull().sum())
 
-# ----------------------------------------------------
-# 6. Fill missing values
-# ----------------------------------------------------
+# ----------------------------------------------------------------
+# 6. Fill Missing Values
+# ----------------------------------------------------------------
 
-# Numeric columns → fill with mean
+# Fill numeric columns with mean
 df["Income"] = df["Income"].fillna(df["Income"].mean())
-df["Rating"] = df["Rating"].fillna(df["Rating"].mean())
+df["HousePrice"] = df["HousePrice"].fillna(df["HousePrice"].mean())
+df["Rooms"] = df["Rooms"].fillna(df["Rooms"].median())
 
-# Categorical columns → fill with mode
-df["Gender"] = df["Gender"].fillna(df["Gender"].mode()[0])
+# Fill categorical columns with mode
+df["AgeGroup"] = df["AgeGroup"].fillna(df["AgeGroup"].mode()[0])
+df["City"] = df["City"].fillna(df["City"].mode()[0])
 
-print("Dataset After Filling Missing Values:")
+print("\nFinal Dataset After Handling Missing Values:\n")
 print(df)
