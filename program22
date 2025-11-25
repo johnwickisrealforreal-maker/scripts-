@@ -2,42 +2,37 @@
 confusion matrix.
 
 Actual Class\Predicted
-
 class
-
-cancer =
-yes
-
+cancer =yes
 cancer = no Total
-
 cancer = yes 90 210 300
 cancer = no 140 9560 9700
-
 Total 230 9770 10000
 
+# Q22: Compute Accuracy, Error Rate, Precision, Recall
+# Confusion matrix values
 
+TP = 90     # cancer=yes predicted yes
+FN = 210    # cancer=yes predicted no
+FP = 140    # cancer=no predicted yes
+TN = 9560   # cancer=no predicted no
 
+# Total samples
+total = TP + FP + FN + TN
 
-# Confusion matrix values (given in the question)
-
-TP = 90    # cancer = yes predicted yes
-FN = 210   # cancer = yes predicted no
-FP = 140   # cancer = no predicted yes
-TN = 9560  # cancer = no predicted no
-
-total = TP + TN + FP + FN
-
-# ---- Calculations ----
-
+# Metrics
 accuracy = (TP + TN) / total
 error_rate = (FP + FN) / total
 precision = TP / (TP + FP)
 recall = TP / (TP + FN)
 
-# ---- Print results ----
+# Output
 print("Confusion Matrix Evaluation")
 print("----------------------------")
-print(f"Accuracy     : {accuracy:.4f} ({accuracy*100:.2f}%)")
-print(f"Error Rate   : {error_rate:.4f} ({error_rate*100:.2f}%)")
-print(f"Precision    : {precision:.4f} ({precision*100:.2f}%)")
-print(f"Recall       : {recall:.4f} ({recall*100:.2f}%)")
+print(f"Accuracy   : {accuracy:.4f}  ({accuracy*100:.2f}%)")
+print(f"Error Rate : {error_rate:.4f}  ({error_rate*100:.2f}%)")
+print(f"Precision  : {precision:.4f}  ({precision*100:.2f}%)")
+print(f"Recall     : {recall:.4f}  ({recall*100:.2f}%)")
+
+
+
