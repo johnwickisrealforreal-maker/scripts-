@@ -5,47 +5,57 @@ According to the decision tree you have made from the previous training
 data set, what is the decision for the test data: [Age > 35, Income =
 Medium, Gender = Female, Marital Status = Married]?
 
-# Program 7: Decision Tree using sklearn for Cosmetics Dataset (Program 7)
-
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier, export_text
 
-# Dataset
-data = {
-    'Age': ['<21', '<21', '21-35', '21-35', '>35', '>35', '21-35', '<21', '>35', '21-35'],
-    'Income': ['High', 'High', 'High', 'Medium', 'Low', 'Low', 'Medium', 'Low', 'Medium', 'Low'],
-    'Gender': ['Male', 'Female', 'Female', 'Male', 'Male', 'Female', 'Female', 'Female', 'Male', 'Female'],
-    'MaritalStatus': ['Single', 'Single', 'Married', 'Single', 'Married', 'Married', 'Single', 'Married', 'Single', 'Married'],
-    'Buys': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'Yes', 'No', 'Yes']
-}
-df = pd.DataFrame(data)
+# =====================================================
+# 1. LOAD THE LIPSTICK CSV DATASET
+# =====================================================
+df = pd.read_csv("lipstick.csv")   # <-- your actual CSV
+print("\n----- DATASET LOADED -----")
+print(df)
 
-# Encoding
-le = LabelEncoder()
+# =====================================================
+# 2. LABEL ENCODING FOR CATEGORICAL COLUMNS
+# =====================================================
+encoders = {}
 for col in df.columns:
-    df[col] = le.fit_transform(df[col])
+    if df[col].dtype == 'object':
+        encoders[col] = LabelEncoder()
+        df[col] = encoders[col].fit_transform(df[col])
 
-X = df[['Age', 'Income', 'Gender', 'MaritalStatus']]
+# Features & Target
+X = df[['Age', 'Income', 'Gender', 'Ms']]
 y = df['Buys']
 
-# Model training
+# =====================================================
+# 3. TRAIN DECISION TREE MODEL (ENTROPY)
+# =====================================================
 model = DecisionTreeClassifier(criterion='entropy', random_state=0)
 model.fit(X, y)
 
-# Show tree rules
-print("\n--- Decision Tree Rules ---")
+# =====================================================
+# 4. DISPLAY TREE RULES
+# =====================================================
+print("\n----- DECISION TREE RULES -----")
 print(export_text(model, feature_names=list(X.columns)))
 
-# Test data for Program 7
+# =====================================================
+# 5. TEST DATA FOR PROGRAM 7
+#    [Age >35, Income = Medium, Gender = Female, Ms = Married]
+# =====================================================
 test = pd.DataFrame([[">35", "Medium", "Female", "Married"]],
-                    columns=['Age', 'Income', 'Gender', 'MaritalStatus'])
+                    columns=['Age', 'Income', 'Gender', 'Ms'])
 
+# Encode using the SAME encoders used for training
 for col in test.columns:
-    test[col] = le.fit_transform(test[col])
+    test[col] = encoders[col].transform(test[col])
 
 # Prediction
-prediction = model.predict(test)
-print("\n--- Program 7: Prediction ---")
-print("Test Input: [Age >35, Income=Medium, Gender=Female, MaritalStatus=Married]")
-print("Decision (Buys?):", "Yes" if prediction[0] == 1 else "No")
+pred = model.predict(test)[0]
+
+print("\n----- PROGRAM 7: FINAL PREDICTION -----")
+print("Test Input: [Age >35, Income=Medium, Gender=Female, Ms=Married]")
+print("Decision (Buys?):",
+      "Yes" if pred == encoders['Buys'].transform(['Yes'])[0] else "No")
