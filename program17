@@ -1,26 +1,37 @@
 17. Compute Accuracy, Error rate, Precision, Recall for following confusion
 matrix ( Use formula for each)
+# program17_confusion_matrix_metrics.py
+# Compute Accuracy, Error Rate, Precision, Recall from confusion matrix
 
-True Positives (TPs): 1 False Positives (FPs): 1
-False Negatives (FNs): 8 True Negatives (TNs): 90
-
-# Given confusion matrix values
+# Given values
 TP = 1
 FP = 1
 FN = 8
 TN = 90
 
-# Total
+# Total observations
 total = TP + FP + FN + TN
 
-# Calculations
+print("------ Confusion Matrix Values ------")
+print(f"TP = {TP}, FP = {FP}, FN = {FN}, TN = {TN}")
+print(f"Total = {total}\n")
+
+# -------------------- Formulas --------------------
+print("------ Formulas Used ------")
+print("Accuracy     = (TP + TN) / (TP + FP + FN + TN)")
+print("Error Rate   = (FP + FN) / (TP + FP + FN + TN)")
+print("Precision    = TP / (TP + FP)")
+print("Recall       = TP / (TP + FN)\n")
+
+# -------------------- Calculations --------------------
 accuracy = (TP + TN) / total
 error_rate = (FP + FN) / total
 precision = TP / (TP + FP)
 recall = TP / (TP + FN)
 
-# Print results
-print("Accuracy     =", accuracy)
-print("Error Rate   =", error_rate)
-print("Precision    =", precision)
-print("Recall       =", recall)
+# -------------------- Results --------------------
+print("------ Computed Results ------")
+print(f"Accuracy     = {accuracy:.4f}  ({accuracy*100:.2f}%)")
+print(f"Error Rate   = {error_rate:.4f}  ({error_rate*100:.2f}%)")
+print(f"Precision    = {precision:.4f}")
+print(f"Recall       = {recall:.4f}")
